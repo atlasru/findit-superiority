@@ -61,9 +61,9 @@
             margin-right: 6px;
         }
 
-        .red { background: #bf616a; }
-        .yellow { background: #ebcb8b; }
-        .green { background: #a3be8c; }
+        .red-dot    { background: #bf616a; }
+        .yellow-dot { background: #ebcb8b; }
+        .green-dot  { background: #a3be8c; }
 
         .terminal-body {
             padding: 1.8rem;
@@ -81,12 +81,6 @@
             font-size: 1.6rem;
             font-weight: normal;
             margin: 0.5rem 0;
-        }
-
-        .sub {
-            color: #65737e;
-            font-size: 0.9rem;
-            margin-bottom: 1.2rem;
         }
 
         hr {
@@ -121,6 +115,7 @@
             transition: all 0.2s;
             margin-right: 0.8rem;
             margin-bottom: 0.8rem;
+            cursor: pointer;
         }
 
         .btn:hover {
@@ -186,6 +181,141 @@
             margin-left: 0.5rem;
             color: #d8dee9;
         }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #0f1217;
+            border: 1px solid #2c3e4e;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 480px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            animation: modal-in 0.18s ease;
+        }
+
+        @keyframes modal-in {
+            from { opacity: 0; transform: translateY(-12px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0)     scale(1);    }
+        }
+
+        .modal-header {
+            background: #1e262e;
+            padding: 0.75rem 1.2rem;
+            border-bottom: 1px solid #2c3e4e;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #88c0d0;
+            font-size: 0.9rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #65737e;
+            font-size: 1.2rem;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0 0.2rem;
+            transition: color 0.15s;
+        }
+
+        .modal-close:hover {
+            color: #bf616a;
+        }
+
+        .modal-body {
+            padding: 1.6rem;
+        }
+
+        .modal-title {
+            color: #d8dee9;
+            font-size: 1rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .modal-sub {
+            color: #65737e;
+            font-size: 0.8rem;
+            margin-bottom: 1.4rem;
+        }
+
+        .dl-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: #1a2028;
+            border: 1px solid #2c3e4e;
+            border-radius: 8px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 0.8rem;
+            text-decoration: none;
+            color: #d8dee9;
+            transition: border-color 0.15s, background 0.15s;
+            cursor: pointer;
+        }
+
+        .dl-option:hover {
+            border-color: #5e81ac;
+            background: #1e2a36;
+            text-decoration: none;
+        }
+
+        .dl-icon {
+            font-size: 1.6rem;
+            line-height: 1;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .dl-info-title {
+            font-size: 0.95rem;
+            color: #d8dee9;
+            margin-bottom: 0.2rem;
+        }
+
+        .dl-info-desc {
+            font-size: 0.78rem;
+            color: #65737e;
+            line-height: 1.4;
+        }
+
+        .dl-badge {
+            display: inline-block;
+            background: #2c3e4e;
+            padding: 0.15rem 0.45rem;
+            border-radius: 3px;
+            font-size: 0.68rem;
+            color: #88c0d0;
+            margin-left: 0.4rem;
+            vertical-align: middle;
+        }
+
+        .dl-badge-green {
+            background: #1e3a2a;
+            color: #a3be8c;
+        }
+
+        .modal-note {
+            font-size: 0.75rem;
+            color: #4f5b66;
+            margin-top: 1rem;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -195,12 +325,16 @@
 __/\__  / _(_) /\ \ \__| |   \_   \/__   \/ \ __/\__
 \    / | |_| |/  \/ / _` |    / /\/  / /\/  / \    /
 /_  _\ |  _| / /\  / (_| | /\/ /_   / / /\_/  /_  _\
-\/   |_| |_\_\ \/ \__,_| \____/   \/  \/      \/
+  \/   |_| |_\_\ \/ \__,_| \____/   \/  \/      \/
     </div>
 
     <div class="terminal">
         <div class="terminal-header">
-            <span><span class="terminal-dot red"></span> <span class="terminal-dot yellow"></span> <span class="terminal-dot green"></span></span>
+            <span>
+                <span class="terminal-dot red-dot"></span>
+                <span class="terminal-dot yellow-dot"></span>
+                <span class="terminal-dot green-dot"></span>
+            </span>
             <span style="flex:1; text-align:center;">moderator@findit:~</span>
         </div>
         <div class="terminal-body">
@@ -209,124 +343,190 @@ __/\__  / _(_) /\ \ \__| |   \_   \/__   \/ \ __/\__
             <div style="color:#65737e;">  by d9vh — for moderation/research only</div>
             <div class="border-line">+----------------------------------------------------+</div>
             <div style="margin: 1rem 0;">
-                <span style="color:#a3be8c;">✓</span> Searches all traces of <strong style="color:#ebcb8b;">"superiority"</strong><br>
-                <span style="color:#a3be8c;">✓</span> AppData / Temp / Program Files / ProgramData<br>
-                <span style="color:#a3be8c;">✓</span> Documents, Downloads, Desktop<br>
-                <span style="color:#a3be8c;">✓</span> Windows Registry (keys + autorun)<br>
-                <span style="color:#a3be8c;">✓</span> USN Journal &amp; Event Logs<br>
-                <span style="color:#a3be8c;">✓</span> Fast — finished within 2–3 minutes<br>
-                <span style="color:#a3be8c;">✓</span> <strong style="color:#bf616a;">NO DELETIONS — report only</strong> <span class="badge">safe for evidence</span>
+                <span style="color:#a3be8c;">+</span> Searches all traces of <strong style="color:#ebcb8b;">"superiority"</strong><br>
+                <span style="color:#a3be8c;">+</span> AppData / Temp / Program Files / ProgramData<br>
+                <span style="color:#a3be8c;">+</span> Documents, Downloads, Desktop<br>
+                <span style="color:#a3be8c;">+</span> Windows Registry (keys + autorun)<br>
+                <span style="color:#a3be8c;">+</span> USN Journal &amp; Event Logs<br>
+                <span style="color:#a3be8c;">+</span> Fast — finished within 2–3 minutes<br>
+                <span style="color:#a3be8c;">+</span> <strong style="color:#bf616a;">NO DELETIONS — report only</strong> <span class="badge">safe for evidence</span>
             </div>
             <div class="border-line">+----------------------------------------------------+</div>
 
             <div style="margin: 1.5rem 0 1rem 0;">
-                <a href="download/fiNdIT!.py" download class="btn">🔍 DOWNLOAD fiNdIT!.py</a>
-                <a href="#install" class="btn">📘 Usage guide</a>
+                <button class="btn" onclick="openModal()">[ DOWNLOAD fiNdIT! ]</button>
+                <a href="#install" class="btn">[ Usage guide ]</a>
             </div>
         </div>
     </div>
 
     <div id="install">
-        <h2>📦 INSTALLATION & RUN</h2>
-        <p><strong>Requirements:</strong> Windows 10/11, Python 3.6+</p>
+        <h2>INSTALLATION &amp; RUN</h2>
+        <p><strong>Requirements:</strong> Windows 10/11, Python 3.6+ (for .py) or no requirements (for .exe)</p>
 
         <div class="warning-note">
-            ⚠️ <strong>FOR MODERATORS ONLY</strong><br>
+            FOR MODERATORS ONLY<br>
             This tool <strong>does NOT delete anything</strong>. It only scans and reports traces of "superiority" cheat.<br>
             Use results as evidence. No system changes are made.
         </div>
 
-        <h2>🔧 METHOD 1 — via website (easiest)</h2>
+        <h2>METHOD 1 — via website (easiest)</h2>
         <ol>
-            <li>Click the <strong>DOWNLOAD</strong> button above → save <code>fiNdIT!.py</code> anywhere (e.g. Desktop).</li>
-            <li>Right-click the file → <strong>Open with Python</strong> (or open CMD: <code>python "fiNdIT!.py"</code>).</li>
-            <li>Administrator rights are <strong>recommended</strong> for full search (USN/Event Logs). If not admin, you'll see a warning.</li>
+            <li>Click the <strong>DOWNLOAD</strong> button above and choose your preferred version.</li>
+            <li><strong>.exe:</strong> right-click → Run as administrator. No Python needed.<br>
+                <strong>.py:</strong> right-click → Open with Python, or run <code>python "fiNdIT!.py"</code> in CMD.</li>
+            <li>Administrator rights are <strong>recommended</strong> for full search (USN/Event Logs).</li>
             <li>Press ENTER and wait ~2-3 minutes.</li>
-            <li>Review the report — all found traces are displayed with <span style="color:#a3be8c;">[+]</span> markers.</li>
+            <li>At the end, confirm saving the report to Desktop as a .txt file for evidence.</li>
         </ol>
 
-        <h2>📡 METHOD 2 — via PowerShell (iwr)</h2>
+        <h2>METHOD 2 — via PowerShell (iwr)</h2>
         <div class="code-block">
-# Run in PowerShell (admin recommended):<br>
-$url = "https://github.com/atlasru/findit-superiority/download/fiNdIT!.py"<br>
-$out = "$env:TEMP\fiNdIT!.py"<br>
-Invoke-WebRequest -Uri $url -OutFile $out<br>
+# Run in PowerShell (admin recommended):
+$url = "https://github.com/atlasru/findit-superiority/download/fiNdIT!.py"
+$out = "$env:TEMP\fiNdIT!.py"
+Invoke-WebRequest -Uri $url -OutFile $out
 python $out
         </div>
-        
-        <h2>🐙 METHOD 3 — Git clone</h2>
+
+        <h2>METHOD 3 — Git clone</h2>
         <div class="code-block">
-git clone https://github.com/atlasru/findit-superiority.git<br>
-cd findit-superiority/download<br>
+git clone https://github.com/atlasru/findit-superiority.git
+cd findit-superiority/download
 python "FindIT!.py"
         </div>
 
         <hr>
 
-        <h2>🔍 WHAT IT DOES (SEARCH ONLY)</h2>
+        <h2>WHAT IT CHECKS</h2>
         <ul>
-            <li>Searches <code>%APPDATA%</code>, <code>%LOCALAPPDATA%</code>, <code>%TEMP%</code>, <code>%ProgramFiles%</code>, <code>%ProgramData%</code>, <code>%USERPROFILE%\Documents, Downloads, Desktop</code> for files/folders containing <strong>"superiority"</strong> → <strong>reports them</strong> (no deletion).</li>
-            <li>Checks registry keys: <code>HKCU\Software\Superiority</code>, <code>HKLM\Software\Superiority</code>, <code>HKCU\Software\Classes\superiority</code> and autorun value.</li>
-            <li>Checks USN Journal on C: D: E: F: G: (if exist).</li>
-            <li>Checks Windows Event Logs: NTFS/Operational, System, Security, Application.</li>
+            <li>File system: <code>%APPDATA%</code>, <code>%LOCALAPPDATA%</code>, <code>%TEMP%</code>, <code>%ProgramFiles%</code>, <code>%ProgramData%</code>, Documents, Downloads, Desktop</li>
+            <li>Registry: <code>HKCU\Software\Superiority</code>, <code>HKLM\Software\Superiority</code>, autorun entries</li>
+            <li>Execution traces: Prefetch, UserAssist, AppCompatFlags, Recent shortcuts</li>
+            <li>USN Journal status on C: D: E: F: G:</li>
+            <li>Event Logs: NTFS/Operational, System, Security, Application</li>
+            <li>cLeanIT! cleaner evidence: script files, cleaner logs, Defender logs</li>
+            <li>System info: PC name, HWID, region, OS version (for ban report)</li>
         </ul>
 
         <div class="note">
-            💡 <strong>Note:</strong> Administrator rights are NOT required for basic file/registry search, but ARE required for USN Journal and Event Log checks.<br>
-            🔒 The script will warn you if run without admin — you can still continue, but some checks will be skipped.<br>
-            📄 Output can be copied/saved as evidence for moderation.
+            Administrator rights are NOT required for basic file/registry search, but ARE required for USN Journal and Event Log checks.<br>
+            The script will warn you if run without admin — you can still continue.<br>
+            At scan end, you will be prompted to save the full report as .txt for moderation evidence.
         </div>
 
-        <h2>📋 EXAMPLE OUTPUT</h2>
+        <h2>EXAMPLE OUTPUT</h2>
         <div class="code-block">
-[1/4] Searching file system...
-    -> C:\Users\Player\AppData\Roaming
-      [+] File: C:\Users\Player\AppData\Roaming\superiority_config.json
-      [+] Folder: C:\Users\Player\AppData\Roaming\Superiority
++---------------------------------------------------+
+|   FindIT! - Superiority Traces Finder v2.3        |
++---------------------------------------------------+
+  [3/7] Searching execution traces...
+      [!!!] Prefetch: SUPERIORITY.EXE-AB1C2D3E.pf (last run: 2026-06-01 18:42:11)
+         >> Windows creates Prefetch files every time a program runs.
+         >> This proves the cheat executable was launched on this PC.
+         >> Prefetch survives file deletion -- cannot be faked.
 
-[2/4] Searching registry...
-      [+] Registry key: HKCU\Software\Superiority
-      [-] Registry key: HKLM\Software\Superiority
-      [+] Autorun entry: HKCU\...\Run\Superiority
-
-[3/4] Checking USN Journal...
-      [+] USN Journal active on C:
-      [-] USN Journal on D:
-
-[4/4] Checking event logs...
-      [+] Log exists: Microsoft-Windows-NTFS/Operational
-      [+] Log exists: System
-
-+----------------------------------------------------+
-|  Search completed. Traces found: 5                |
-|  No files were deleted — report only.             |
-+----------------------------------------------------+
++---------------------------------------------------+
+|   Superiority traces found: 3                     |
+|   VERDICT: Cheat detected directly.               |
++---------------------------------------------------+
         </div>
 
-        <h2>❓ TROUBLESHOOTING</h2>
+        <h2>TROUBLESHOOTING</h2>
         <ul>
-            <li><strong>"Python not recognized"</strong> → Install Python from python.org (add to PATH).</li>
-            <li><strong>Some checks show "error"</strong> → Run as Administrator for full access to USN/Event Logs.</li>
-            <li><strong>No traces found</strong> → The user may not have "superiority" cheat installed, or it uses different naming.</li>
-            <li><strong>False positives?</strong> → The script only matches files/folders containing "superiority" (case-insensitive). Verify manually if needed.</li>
+            <li><strong>"Python not recognized"</strong> — Install Python from python.org (add to PATH), or use the .exe release.</li>
+            <li><strong>Some checks show error</strong> — Run as Administrator for full access to USN/Event Logs.</li>
+            <li><strong>No traces found</strong> — The user may not have Superiority installed, or it was cleaned. Check cLeanIT! evidence section.</li>
+            <li><strong>Antivirus flags the .exe</strong> — False positive due to PyInstaller packaging and system scan nature. Source code is available for verification.</li>
         </ul>
 
-        <h2>⚖️ FOR MODERATORS</h2>
+        <h2>FOR MODERATORS</h2>
         <p>This tool is designed for <strong>evidence gathering only</strong>. It does not:</p>
         <ul>
-            <li>❌ Delete any files or folders</li>
-            <li>❌ Modify the registry</li>
-            <li>❌ Clear logs or journals</li>
-            <li>❌ Change any system state</li>
+            <li>Delete any files or folders</li>
+            <li>Modify the registry</li>
+            <li>Clear logs or journals</li>
+            <li>Change any system state</li>
         </ul>
-        <p>Run it on the target machine, save the console output, and use as proof of cheat presence.</p>
+        <p>Run it on the target machine, save the report, and attach as proof for the ban decision.</p>
 
-        <h2>📄 LICENSE</h2>
-        <p>Free for moderation, research, and educational use. Based on CleanIT! by d9vh, modified for safe read-only operation.</p>
+        <h2>LICENSE</h2>
+        <p>Free for moderation, research, and educational use. Commercial use prohibited without written permission from d9vh.</p>
         <div class="border-line" style="margin-top: 2rem;">+----------------------------------------------------+</div>
         <p style="text-align:center; color:#65737e;">FindIT! — find evidence, do not destroy.</p>
     </div>
-    <footer>✦  goodluck moderators ✦</footer>
+    <footer>goodluck moderators</footer>
 </div>
+
+<div class="modal-overlay" id="dlModal" onclick="handleOverlayClick(event)">
+    <div class="modal">
+        <div class="modal-header">
+            <span>[ SELECT DOWNLOAD ]</span>
+            <button class="modal-close" onclick="closeModal()">x</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-title">Choose version</div>
+            <div class="modal-sub">Both versions are identical in functionality.</div>
+
+            <a class="dl-option"
+               href="https://github.com/atlasru/findit-superiority/releases/download/v2.3/fiNdIT.exe"
+               download>
+                <div class="dl-icon">[E]</div>
+                <div>
+                    <div class="dl-info-title">
+                        fiNdIT!.exe
+                        <span class="dl-badge dl-badge-green">recommended</span>
+                    </div>
+                    <div class="dl-info-desc">
+                        Compiled binary — no Python required.<br>
+                        Right-click → Run as administrator.<br>
+                        <span style="color:#bf616a;">Note: antivirus may flag due to PyInstaller — false positive.</span>
+                    </div>
+                </div>
+            </a>
+
+            <a class="dl-option"
+               href="download/fiNdIT!.py"
+               download>
+                <div class="dl-icon">[P]</div>
+                <div>
+                    <div class="dl-info-title">
+                        fiNdIT!.py
+                        <span class="dl-badge">source</span>
+                    </div>
+                    <div class="dl-info-desc">
+                        Python source — requires Python 3.8+ installed.<br>
+                        Run: <code>python "fiNdIT!.py"</code> in CMD as administrator.<br>
+                        Fully auditable, no antivirus issues.
+                    </div>
+                </div>
+            </a>
+
+            <div class="modal-note">v2.3 — Windows 10/11 only</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal() {
+        document.getElementById('dlModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        document.getElementById('dlModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function handleOverlayClick(e) {
+        if (e.target === document.getElementById('dlModal')) {
+            closeModal();
+        }
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+    });
+</script>
 </body>
 </html>
